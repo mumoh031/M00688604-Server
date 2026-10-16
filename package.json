@@ -1,0 +1,23 @@
+{
+  "name": "m00688604-server",
+  "version": "1.0.0",
+  "description": "The accompanying backend for the mevn-frontend.",
+  "homepage": "https://github.com/mumoh031/M00688604-Server#readme",
+  "bugs": {
+    "url": "https://github.com/mumoh031/M00688604-Server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mumoh031/M00688604-Server.git"
+  },
+  "author": "Muhiyadin Mohamud",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
+}
