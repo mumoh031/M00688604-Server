@@ -3,6 +3,7 @@ var app = express();
 var cors = require("cors");
 
 app.use(cors());
+app.use(express.json());
 
 app.get("/lessons", function(request, response) {
   console.log("In comes a request to: " + request.url);
@@ -121,6 +122,18 @@ app.get("/lessons", function(request, response) {
   ];
 
   response.json(subjects);
+});
+
+app.post("/orders", function(request,response){
+  console.log("In comes a request to: " + request.url);
+  var body = request.body;
+  console.log("Order Received" + "\nName: " + body.name + "\nPhone Number: " + body.phoneNumber);
+  response.json({message: "Order received!"});
+});
+
+//Return 404 error
+app.use(function(request, response, next){
+  response.status(404).send("Page not found.");
 });
 
 app.listen(8080, function() {
