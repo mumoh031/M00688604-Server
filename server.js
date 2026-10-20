@@ -4,7 +4,7 @@ var cors = require("cors");
 
 app.use(cors());
 
-app.use(function(request, response) {
+app.get("/lessons", function(request, response) {
   console.log("In comes a request to: " + request.url);
 
   let subjects = [
