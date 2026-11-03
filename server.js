@@ -40,6 +40,19 @@ app.post("/orders", async function(request,response){
   response.send(result);
 });
 
+//update lessons
+app.put("/lessons/:_id", async function(request, response){
+  var body = request.body;
+  let collection = await db.collection("lessons");
+  const query = { _id: new ObjectId(request.params._id) };
+  const updates = {
+    $set: request.body
+  };
+  result = await collection.updateOne(query, updates);
+  response.send(result);
+
+})
+
 //Return 404 error
 app.use(function(request, response, next){
   response.status(404).send("Page not found.");
