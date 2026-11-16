@@ -4,6 +4,8 @@ const URI = process.env.URI;
 const client = new MongoClient(URI);
 const db = client.db("afterschool");
 
+const port = process.env.PORT || 8080;
+
 async function connectToMongoDB() {
   try {
     await client.connect();
@@ -58,6 +60,6 @@ app.use(function(request, response, next){
   response.status(404).send("Page not found.");
 });
 
-app.listen(8080, function() {
-console.log("App started on port 8080");
+app.listen(port, function() {
+console.log("App started on port " + port);
 });
