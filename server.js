@@ -34,6 +34,27 @@ app.get("/lessons", async function(request, response) {
   response.json(results);
 });
 
+//search lessons by title, location, price or availability
+app.get("/search", async function(request, response) {
+  console.log("In comes a request to: " + request.url);
+
+  // the search text from the URL, e.g. /search?q=ea, made lowercase so the search isn't case-sensitive
+  let searchText = (request.query.q || "").toLowerCase();
+
+  let collection = await db.collection("lessons");
+  let lessons = await collection.find({}).toArray();
+
+  // keep only the lessons where at least one field contains the search text
+  let results = lessons.filter(function(lesson) {
+    return lesson.name.toLowerCase().includes(searchText) ||
+           lesson.location.toLowerCase().includes(searchText) ||
+           String(lesson.price).includes(searchText) ||
+           String(lesson.availableInventory).includes(searchText);
+  });
+
+  response.json(results);
+});
+
 app.post("/orders", async function(request,response){
   console.log("In comes a request to: " + request.url);
   var body = request.body;
