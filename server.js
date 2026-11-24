@@ -93,6 +93,59 @@ app.put("/lessons/:_id", async function(request, response){
 
 })
 
+// get every teacher 
+app.get("/teachers", async function(request, response) {
+  let collection = await db.collection("teachers");
+  let results = await collection.find({}).toArray();
+  response.json(results);
+});
+
+// get every lesson taught by one teacher
+app.get("/teachers/:_id/lessons", async function(request, response) {
+  let teachers = await db.collection("teachers");
+  let teacher = await teachers.findOne({ _id: new ObjectId(request.params._id) });
+  if (!teacher) {
+    return response.status(404).json({ error: "Teacher not found." });
+  }
+
+  // find all lessons whose _id is in the teacher's list of lessonIds
+  let lessons = await db.collection("lessons");
+  let results = await lessons.find({ _id: { $in: teacher.lessonIds } }).toArray();
+  response.json(results);
+});
+
+// create a teacher
+app.post("/teachers", async function(request, response) {
+  var body = request.body;
+
+  //some sanity check to make sure every lesson id actually belongs to a lesson in the database
+  let lessonIds = [...new Set(body.lessonIds)].map(function(id) { return new ObjectId(id); }); // using a set here to remove duplicates so the same lesson can't be counted twice
+  let lessons = await db.collection("lessons");
+  let foundCount = await lessons.countDocuments({ _id: { $in: lessonIds } });
+  if (foundCount !== lessonIds.length) {
+    return response.status(400).json({ error: "One or more lessonIds do not match a lesson." });
+  }
+
+  let teacher = {
+    firstName: body.firstName,
+    lastName: body.lastName,
+    lessonIds: lessonIds
+  };
+  let teachers = await db.collection("teachers");
+  let result = await teachers.insertOne(teacher);
+  response.status(201).json(result);
+});
+
+// delete a teacher (mainly for testing purposes)
+app.delete("/teachers/:_id", async function(request, response) {
+  let teachers = await db.collection("teachers");
+  let result = await teachers.deleteOne({ _id: new ObjectId(request.params._id) });
+  if (result.deletedCount === 0) {
+    return response.status(404).json({ error: "Teacher not found." });
+  }
+  response.json(result);
+});
+
 //Return 404 error
 app.use(function(request, response, next){
   response.status(404).send("Page not found.");
