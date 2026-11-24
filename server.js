@@ -25,9 +25,19 @@ var cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
-app.get("/lessons", async function(request, response) {
-  console.log("In comes a request to: " + request.url);
+// logs every request: time, method, URL, and the status code once the response is sent
+app.use(function(request, response, next) {
+  const start = Date.now();
+  response.on("finish", function() {
+    console.log(
+      new Date().toISOString() + " " + request.method + " " + request.originalUrl +
+      " -> " + response.statusCode + " (" + (Date.now() - start) + "ms)"
+    );
+  });
+  next();
+});
 
+app.get("/lessons", async function(request, response) {
   let collection = await db.collection("lessons");
   let results = await collection.find({}).toArray();
 
@@ -36,8 +46,6 @@ app.get("/lessons", async function(request, response) {
 
 //search lessons by title, location, price or availability
 app.get("/search", async function(request, response) {
-  console.log("In comes a request to: " + request.url);
-
   // the search text from the URL, e.g. /search?q=ea, made lowercase so the search isn't case-sensitive
   let searchText = (request.query.q || "").toLowerCase();
 
@@ -56,7 +64,6 @@ app.get("/search", async function(request, response) {
 });
 
 app.post("/orders", async function(request,response){
-  console.log("In comes a request to: " + request.url);
   var body = request.body;
   let collection = await db.collection("orders");
   let result = await collection.insertOne(body);
