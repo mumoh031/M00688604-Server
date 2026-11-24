@@ -21,6 +21,7 @@ connectToMongoDB();
 var express = require("express");
 var app = express();
 var cors = require("cors");
+var path = require("path");
 
 app.use(cors());
 app.use(express.json());
@@ -35,6 +36,15 @@ app.use(function(request, response, next) {
     );
   });
   next();
+});
+
+// Sets up the path where the lesson images are stored on the server
+var publicPath = path.resolve(__dirname, "staticFiles");
+// Sends the image if it exists in staticFiles, e.g. /images/math.jpg -> staticFiles/math.jpg
+app.use("/images", express.static(publicPath));
+// If the image wasn't found, return an error message
+app.use("/images", function(request, response){
+  response.status(404).send("Image not found!");
 });
 
 app.get("/lessons", async function(request, response) {
