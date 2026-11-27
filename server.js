@@ -80,6 +80,16 @@ app.post("/orders", async function(request,response){
   response.send(result);
 });
 
+// delete an order (used by Postman to clean up the test order it created)
+app.delete("/orders/:_id", async function(request, response) {
+  let collection = await db.collection("orders");
+  let result = await collection.deleteOne({ _id: new ObjectId(request.params._id) });
+  if (result.deletedCount === 0) {
+    return response.status(404).json({ error: "Order not found." });
+  }
+  response.json(result);
+});
+
 //update lessons
 app.put("/lessons/:_id", async function(request, response){
   var body = request.body;
