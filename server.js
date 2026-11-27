@@ -146,6 +146,25 @@ app.delete("/teachers/:_id", async function(request, response) {
   response.json(result);
 });
 
+// count how many spaces of one lesson have been bought, by looking through every order
+app.get("/enrolment/:lessonid", async function(request, response) {
+  let lessonId = request.params.lessonid;
+
+  let collection = await db.collection("orders");
+  let orders = await collection.find({}).toArray();
+
+  let enrolment = 0;
+  for (const order of orders) {
+    for (const lesson of order.lessonsOrdered || []) {
+      if (lesson._id === lessonId) {
+        enrolment = enrolment + 1;
+      }
+    }
+  }
+
+  response.json({ lessonId: lessonId, enrolment: enrolment });
+});
+
 //Return 404 error
 app.use(function(request, response, next){
   response.status(404).send("Page not found.");
