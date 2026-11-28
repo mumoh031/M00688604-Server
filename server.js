@@ -92,16 +92,14 @@ app.delete("/orders/:_id", async function(request, response) {
 
 //update lessons
 app.put("/lessons/:_id", async function(request, response){
-  var body = request.body;
   let collection = await db.collection("lessons");
   const query = { _id: new ObjectId(request.params._id) };
   const updates = {
     $set: request.body
   };
-  result = await collection.updateOne(query, updates);
+  let result = await collection.updateOne(query, updates);
   response.send(result);
-
-})
+});
 
 // get every teacher 
 app.get("/teachers", async function(request, response) {
